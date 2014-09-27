@@ -1,6 +1,8 @@
 # DNSAdapter
 
 [![Build Status](https://travis-ci.org/petergoldstein/dns_adapter.svg?branch=master)](https://travis-ci.org/petergoldstein/dns_adapter)
+[![Test Coverage](https://codeclimate.com/github/petergoldstein/dns_adapter/badges/coverage.svg)](https://codeclimate.com/github/petergoldstein/dns_adapter)
+[![Code Climate](https://codeclimate.com/github/petergoldstein/dns_adapter/badges/gpa.svg)](https://codeclimate.com/github/petergoldstein/dns_adapter)
 
 An adapter layer for DNS queries that makes it simple to swap in different DNS providers.
 
