@@ -16,7 +16,8 @@ module DNSAdapter
       fetch_records(domain, 'MX') do |record|
         {
           type: 'MX',
-          exchange: record.exchange.to_s
+          exchange: record.exchange.to_s,
+          ttl: record.ttl
         }
       end
     end
@@ -25,7 +26,8 @@ module DNSAdapter
       fetch_records(arpa_address, 'PTR') do |record|
         {
           type: 'PTR',
-          name: record.name.to_s
+          name: record.name.to_s,
+          ttl: record.ttl
         }
       end
     end
@@ -44,7 +46,8 @@ module DNSAdapter
       fetch_records(domain, type) do |record|
         {
           type: type,
-          address: record.address.to_s
+          address: record.address.to_s,
+          ttl: record.ttl
         }
       end
     end
@@ -55,7 +58,8 @@ module DNSAdapter
           type: type,
           # Use strings.join('') to avoid JRuby issue where
           # data only returns the first string
-          text: record.strings.join('')
+          text: record.strings.join(''),
+          ttl: record.ttl
         }
       end
     end
