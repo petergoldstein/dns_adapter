@@ -26,6 +26,10 @@ module DNSAdapter
       fetch_records(arpa_address, 'PTR')
     end
 
+    def fetch_ns_records(domain)
+      fetch_records(domain, 'NS')
+    end
+
     def fetch_txt_records(domain)
       fetch_records(domain, 'TXT')
     end
@@ -75,6 +79,7 @@ module DNSAdapter
       'AAAA' => :address,
       'MX' => :exchange,
       'PTR' => :name,
+      'NS' => :name,
       'SPF' => :text,
       'TXT' => :text
     }
