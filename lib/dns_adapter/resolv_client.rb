@@ -23,13 +23,7 @@ module DNSAdapter
     end
 
     def fetch_ptr_records(arpa_address)
-      fetch_records(arpa_address, 'PTR') do |record|
-        {
-          type: 'PTR',
-          name: record.name.to_s,
-          ttl: record.ttl
-        }
-      end
+      fetch_name_records(arpa_address, 'PTR')
     end
 
     def fetch_txt_records(domain)
@@ -38,6 +32,10 @@ module DNSAdapter
 
     def fetch_spf_records(domain)
       fetch_txt_type_records(domain, 'SPF')
+    end
+
+    def fetch_ns_records(domain)
+      fetch_name_records(domain, 'NS')
     end
 
     private
@@ -59,6 +57,16 @@ module DNSAdapter
           # Use strings.join('') to avoid JRuby issue where
           # data only returns the first string
           text: record.strings.join(''),
+          ttl: record.ttl
+        }
+      end
+    end
+
+    def fetch_name_records(domain, type)
+      fetch_records(domain, type) do |record|
+        {
+          type: type,
+          name: record.name.to_s,
           ttl: record.ttl
         }
       end
@@ -96,7 +104,7 @@ module DNSAdapter
       raise DNSAdapter::Error, "Error on DNS lookup of '#{domain}'"
     end
 
-    SUPPORTED_RR_TYPES = %w(A AAAA MX PTR TXT SPF)
+    SUPPORTED_RR_TYPES = %w(A AAAA MX PTR TXT SPF NS)
     def self.type_class(rr_type)
       if SUPPORTED_RR_TYPES.include?(rr_type)
         Resolv::DNS::Resource::IN.const_get(rr_type)
