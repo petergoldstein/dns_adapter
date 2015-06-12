@@ -30,6 +30,10 @@ module DNSAdapter
       fetch_records(domain, 'NS')
     end
 
+    def fetch_cname_records(domain)
+      fetch_records(domain, 'CNAME')
+    end
+
     def fetch_txt_records(domain)
       fetch_records(domain, 'TXT')
     end
@@ -80,6 +84,7 @@ module DNSAdapter
       'MX' => :exchange,
       'PTR' => :name,
       'NS' => :name,
+      'CNAME' => :name,
       'SPF' => :text,
       'TXT' => :text
     }
