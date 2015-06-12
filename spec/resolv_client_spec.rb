@@ -423,4 +423,58 @@ describe DNSAdapter::ResolvClient do
         .to raise_error(DNSAdapter::TimeoutError)
     end
   end
+
+  context '#fetch_cname_records' do
+    let(:first_cname_name) { SecureRandom.hex(10) }
+    let(:first_cname_record) do
+      Resolv::DNS::Resource::IN::CNAME.new(first_cname_name)
+    end
+    let(:record_list) { [first_cname_record] }
+    let(:cname_domain) { 'example.com' }
+    let(:cname_domain_with_trailing) { "#{cname_domain}." }
+
+    it 'should map the Resolv classes to a set of hashes' do
+      expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
+      expect(mock_resolver).to receive(:getresources)
+        .with(cname_domain, Resolv::DNS::Resource::IN::CNAME)
+        .and_return(record_list)
+      results = subject.fetch_cname_records(cname_domain)
+      expect(results.size).to eq(record_list.length)
+      expect(results.map { |x| x[:type] })
+        .to eq(record_list.length.times.map { 'CNAME' })
+      expect(results.map { |x| x[:name] }).to eq(
+        [first_cname_name])
+    end
+
+    it 'should map when the domain has a trailing dot' do
+      expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
+      expect(mock_resolver).to receive(:getresources)
+        .with(cname_domain, Resolv::DNS::Resource::IN::CNAME)
+        .and_return(record_list)
+      results = subject.fetch_cname_records(cname_domain_with_trailing)
+      expect(results.size).to eq(record_list.length)
+      expect(results.map { |x| x[:type] })
+        .to eq(record_list.length.times.map { 'CNAME' })
+      expect(results.map { |x| x[:name] }).to eq(
+        [first_cname_name])
+    end
+
+    it 'should map the Resolv errors to Coppertone errors' do
+      expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
+      expect(mock_resolver).to receive(:getresources)
+        .with(cname_domain, Resolv::DNS::Resource::IN::CNAME)
+        .and_raise(Resolv::ResolvError)
+      expect { subject.fetch_cname_records(cname_domain_with_trailing) }
+        .to raise_error(DNSAdapter::Error)
+    end
+
+    it 'should map the Resolv timeout errors to Coppertone errors' do
+      expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
+      expect(mock_resolver).to receive(:getresources)
+        .with(cname_domain, Resolv::DNS::Resource::IN::CNAME)
+        .and_raise(Resolv::ResolvTimeout)
+      expect { subject.fetch_cname_records(cname_domain_with_trailing) }
+        .to raise_error(DNSAdapter::TimeoutError)
+    end
+  end
 end

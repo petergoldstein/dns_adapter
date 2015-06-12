@@ -38,6 +38,10 @@ module DNSAdapter
       fetch_name_records(domain, 'NS')
     end
 
+    def fetch_cname_records(domain)
+      fetch_name_records(domain, 'CNAME')
+    end
+
     private
 
     def fetch_a_type_records(domain, type)
@@ -104,7 +108,7 @@ module DNSAdapter
       raise DNSAdapter::Error, "Error on DNS lookup of '#{domain}'"
     end
 
-    SUPPORTED_RR_TYPES = %w(A AAAA MX PTR TXT SPF NS)
+    SUPPORTED_RR_TYPES = %w(A AAAA MX PTR TXT SPF NS CNAME)
     def self.type_class(rr_type)
       if SUPPORTED_RR_TYPES.include?(rr_type)
         Resolv::DNS::Resource::IN.const_get(rr_type)
