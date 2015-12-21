@@ -1,10 +1,10 @@
 sudo: false
 language: ruby
 env:
-  - CODECLIMATE_REPO_TOKEN=9881d1116b64b55a16845046a4a2dc43f12203d7201a33ce92fec4b7732e3c93
+  - CODECLIMATE_REPO_TOKEN=230883de63c3f82afe4a809f5a488bd849ddfbbaa2c10dae95b57aaf2e60c1e9
 rvm:
   - 2.0
   - 2.1
   - 2.2.3
-  - jruby-9.0.0.0
+  - jruby-9.0.4.0
 
