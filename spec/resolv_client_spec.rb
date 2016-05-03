@@ -20,7 +20,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_a_records(domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'A' })
+        .to eq(Array.new(record_list.length) { 'A' })
       expect(results.map { |x| x[:address] })
         .to eq(record_list.map(&:address).map(&:to_s))
     end
@@ -32,7 +32,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_a_records(domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'A' })
+        .to eq(Array.new(record_list.length) { 'A' })
       expect(results.map { |x| x[:address] })
         .to eq(record_list.map(&:address).map(&:to_s))
     end
@@ -92,7 +92,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_aaaa_records(domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'AAAA' })
+        .to eq(Array.new(record_list.length) { 'AAAA' })
       expect(results.map { |x| x[:address] })
         .to eq(record_list.map(&:address).map(&:to_s))
     end
@@ -104,7 +104,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_aaaa_records(domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'AAAA' })
+        .to eq(Array.new(record_list.length) { 'AAAA' })
       expect(results.map { |x| x[:address] })
         .to eq(record_list.map(&:address).map(&:to_s))
     end
@@ -152,7 +152,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_mx_records(domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'MX' })
+        .to eq(Array.new(record_list.length) { 'MX' })
       expect(results.map { |x| x[:exchange] })
         .to eq(record_list.map(&:exchange).map(&:to_s))
     end
@@ -164,7 +164,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_mx_records(domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'MX' })
+        .to eq(Array.new(record_list.length) { 'MX' })
       expect(results.map { |x| x[:exchange] })
         .to eq(record_list.map(&:exchange).map(&:to_s))
     end
@@ -213,7 +213,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_txt_records(domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'TXT' })
+        .to eq(Array.new(record_list.length) { 'TXT' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_txt_string,
          ([second_txt_string] + second_txt_string_array).join('')])
@@ -227,7 +227,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_txt_records(domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'TXT' })
+        .to eq(Array.new(record_list.length) { 'TXT' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_txt_string,
          ([second_txt_string] + second_txt_string_array).join('')])
@@ -277,7 +277,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_spf_records(domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'SPF' })
+        .to eq(Array.new(record_list.length) { 'SPF' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_spf_string,
          ([second_spf_string] + second_spf_string_array).join('')])
@@ -291,7 +291,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_spf_records(domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'SPF' })
+        .to eq(Array.new(record_list.length) { 'SPF' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_spf_string,
          ([second_spf_string] + second_spf_string_array).join('')])
@@ -333,7 +333,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_ptr_records(arpa_domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'PTR' })
+        .to eq(Array.new(record_list.length) { 'PTR' })
       expect(results.map { |x| x[:name] }).to eq(
         [first_ptr_name])
     end
@@ -346,7 +346,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_ptr_records(arpa_domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'PTR' })
+        .to eq(Array.new(record_list.length) { 'PTR' })
       expect(results.map { |x| x[:name] }).to eq(
         [first_ptr_name])
     end
@@ -387,7 +387,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_ns_records(ns_domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'NS' })
+        .to eq(Array.new(record_list.length) { 'NS' })
       expect(results.map { |x| x[:name] }).to eq(
         [first_ns_name])
     end
@@ -400,7 +400,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_ns_records(ns_domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'NS' })
+        .to eq(Array.new(record_list.length) { 'NS' })
       expect(results.map { |x| x[:name] }).to eq(
         [first_ns_name])
     end
@@ -441,7 +441,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_cname_records(cname_domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'CNAME' })
+        .to eq(Array.new(record_list.length) { 'CNAME' })
       expect(results.map { |x| x[:name] }).to eq(
         [first_cname_name])
     end
@@ -454,7 +454,7 @@ describe DNSAdapter::ResolvClient do
       results = subject.fetch_cname_records(cname_domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
-        .to eq(record_list.length.times.map { 'CNAME' })
+        .to eq(Array.new(record_list.length) { 'CNAME' })
       expect(results.map { |x| x[:name] }).to eq(
         [first_cname_name])
     end

@@ -72,10 +72,10 @@ module DNSAdapter
       end
     end
 
-    TIMEOUT = 'TIMEOUT'
+    TIMEOUT = 'TIMEOUT'.freeze
     def check_for_timeout(record_set)
       return [] if record_set.select { |r| r == TIMEOUT }.empty?
-      fail DNSAdapter::TimeoutError
+      raise DNSAdapter::TimeoutError
     end
 
     RECORD_TYPE_TO_ATTR_NAME_MAP = {
@@ -87,12 +87,12 @@ module DNSAdapter
       'CNAME' => :name,
       'SPF' => :text,
       'TXT' => :text
-    }
+    }.freeze
 
     def formatted_records(records, type)
       records.map do |r|
         val = r[type]
-        fail DNSAdapter::TimeoutError if val == TIMEOUT
+        raise DNSAdapter::TimeoutError if val == TIMEOUT
         val = normalize_value(val, type)
         {
           type: type,

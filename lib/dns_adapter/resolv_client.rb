@@ -91,8 +91,8 @@ module DNSAdapter
       resources = getresources(domain, rr_type)
 
       unless resources
-        fail DNSAdapter::Error,
-             "Unknown error on DNS '#{rr_type}' lookup of '#{domain}'"
+        raise DNSAdapter::Error,
+              "Unknown error on DNS '#{rr_type}' lookup of '#{domain}'"
       end
 
       resources
@@ -108,12 +108,12 @@ module DNSAdapter
       raise DNSAdapter::Error, "Error on DNS lookup of '#{domain}'"
     end
 
-    SUPPORTED_RR_TYPES = %w(A AAAA MX PTR TXT SPF NS CNAME)
+    SUPPORTED_RR_TYPES = %w(A AAAA MX PTR TXT SPF NS CNAME).freeze
     def self.type_class(rr_type)
       if SUPPORTED_RR_TYPES.include?(rr_type)
         Resolv::DNS::Resource::IN.const_get(rr_type)
       else
-        fail ArgumentError, "Unknown RR type: #{rr_type}"
+        raise ArgumentError, "Unknown RR type: #{rr_type}"
       end
     end
 
