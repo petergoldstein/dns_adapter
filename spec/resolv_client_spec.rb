@@ -216,7 +216,8 @@ describe DNSAdapter::ResolvClient do
         .to eq(Array.new(record_list.length) { 'TXT' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_txt_string,
-         ([second_txt_string] + second_txt_string_array).join('')])
+         ([second_txt_string] + second_txt_string_array).join('')]
+      )
     end
 
     it 'should map when the domain has a trailing dot' do
@@ -230,7 +231,8 @@ describe DNSAdapter::ResolvClient do
         .to eq(Array.new(record_list.length) { 'TXT' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_txt_string,
-         ([second_txt_string] + second_txt_string_array).join('')])
+         ([second_txt_string] + second_txt_string_array).join('')]
+      )
     end
 
     it 'should map the Resolv errors to Coppertone errors' do
@@ -280,7 +282,8 @@ describe DNSAdapter::ResolvClient do
         .to eq(Array.new(record_list.length) { 'SPF' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_spf_string,
-         ([second_spf_string] + second_spf_string_array).join('')])
+         ([second_spf_string] + second_spf_string_array).join('')]
+      )
     end
 
     it 'should map when the domain has a trailing dot' do
@@ -294,7 +297,8 @@ describe DNSAdapter::ResolvClient do
         .to eq(Array.new(record_list.length) { 'SPF' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_spf_string,
-         ([second_spf_string] + second_spf_string_array).join('')])
+         ([second_spf_string] + second_spf_string_array).join('')]
+      )
     end
 
     it 'should map the Resolv errors to Coppertone errors' do
@@ -335,7 +339,8 @@ describe DNSAdapter::ResolvClient do
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'PTR' })
       expect(results.map { |x| x[:name] }).to eq(
-        [first_ptr_name])
+        [first_ptr_name]
+      )
     end
 
     it 'should map when the domain has a trailing dot' do
@@ -348,7 +353,8 @@ describe DNSAdapter::ResolvClient do
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'PTR' })
       expect(results.map { |x| x[:name] }).to eq(
-        [first_ptr_name])
+        [first_ptr_name]
+      )
     end
 
     it 'should map the Resolv errors to Coppertone errors' do
@@ -389,7 +395,8 @@ describe DNSAdapter::ResolvClient do
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'NS' })
       expect(results.map { |x| x[:name] }).to eq(
-        [first_ns_name])
+        [first_ns_name]
+      )
     end
 
     it 'should map when the domain has a trailing dot' do
@@ -402,7 +409,8 @@ describe DNSAdapter::ResolvClient do
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'NS' })
       expect(results.map { |x| x[:name] }).to eq(
-        [first_ns_name])
+        [first_ns_name]
+      )
     end
 
     it 'should map the Resolv errors to Coppertone errors' do
@@ -443,7 +451,8 @@ describe DNSAdapter::ResolvClient do
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'CNAME' })
       expect(results.map { |x| x[:name] }).to eq(
-        [first_cname_name])
+        [first_cname_name]
+      )
     end
 
     it 'should map when the domain has a trailing dot' do
@@ -456,7 +465,8 @@ describe DNSAdapter::ResolvClient do
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'CNAME' })
       expect(results.map { |x| x[:name] }).to eq(
-        [first_cname_name])
+        [first_cname_name]
+      )
     end
 
     it 'should map the Resolv errors to Coppertone errors' do
