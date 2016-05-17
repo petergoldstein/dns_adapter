@@ -60,7 +60,7 @@ module DNSAdapter
           type: type,
           # Use strings.join('') to avoid JRuby issue where
           # data only returns the first string
-          text: record.strings.join('').force_encoding('US-ASCII'),
+          text: record.strings.join(''),
           ttl: record.ttl
         }
       end
