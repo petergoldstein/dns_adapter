@@ -487,4 +487,13 @@ describe DNSAdapter::ResolvClient do
         .to raise_error(DNSAdapter::TimeoutError)
     end
   end
+
+  context '#timeouts=' do
+    let(:timeout_val) { 5 }
+    it 'should delegate timeouts=' do
+      expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
+      expect(mock_resolver).to receive(:timeouts=).with(timeout_val)
+      expect { subject.timeouts = timeout_val }.not_to raise_error
+    end
+  end
 end

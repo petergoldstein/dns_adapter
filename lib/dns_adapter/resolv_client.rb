@@ -42,6 +42,10 @@ module DNSAdapter
       fetch_name_records(domain, 'CNAME')
     end
 
+    def timeouts=(timeouts)
+      dns_resolver.timeouts = timeouts
+    end
+
     private
 
     def fetch_a_type_records(domain, type)
