@@ -42,6 +42,10 @@ module DNSAdapter
       fetch_records(domain, 'SPF')
     end
 
+    def timeouts=(timeouts)
+      # Deliberate NOOP
+    end
+
     def fetch_records(domain, type)
       record_set = find_records_for_domain(domain)
       return [] if record_set.empty?
