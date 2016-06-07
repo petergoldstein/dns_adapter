@@ -97,21 +97,25 @@ module DNSAdapter
       records.map do |r|
         val = r[type]
         raise DNSAdapter::TimeoutError if val == TIMEOUT
-        val = normalize_value(val, type)
-        {
-          type: type,
-          RECORD_TYPE_TO_ATTR_NAME_MAP[type] => val
-        }
+        value_to_hash(val, type).merge(type: type)
       end
     end
 
-    def normalize_value(value, type)
+    def value_to_hash(value, type)
       if type == 'MX' && value.is_a?(Array)
-        value.last
+        mx_hash(value)
       elsif (type == 'TXT' || type == 'SPF') && value.is_a?(Array)
-        value.join('')
+        { text: value.join('') }
       else
-        value
+        { RECORD_TYPE_TO_ATTR_NAME_MAP[type] => value }
+      end
+    end
+
+    def mx_hash(value)
+      if value.size > 1
+        { preference: value.first, exchange: value.last }
+      else
+        { exchange: value.last }
       end
     end
   end

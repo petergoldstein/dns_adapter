@@ -17,6 +17,7 @@ module DNSAdapter
         {
           type: 'MX',
           exchange: record.exchange.to_s,
+          preference: record.preference,
           ttl: record.ttl
         }
       end
