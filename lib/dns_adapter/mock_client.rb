@@ -47,14 +47,25 @@ module DNSAdapter
     end
 
     def fetch_records(domain, type)
-      record_set = find_records_for_domain(domain)
-      return [] if record_set.empty?
-      records = records_for_type(record_set, type)
+      records = raw_records(domain, type)
       if records.empty?
-        check_for_timeout(record_set)
+        check_for_timeout(domain)
       else
         formatted_records(records, type)
       end
+    end
+
+    def raw_records(domain, type)
+      record_set = find_records_for_domain(domain)
+      return [] if record_set.empty?
+      follow_cname(record_set, type) || records_for_type(record_set, type)
+    end
+
+    def follow_cname(record_set, type)
+      return nil if type == 'CNAME' # Never follow CNAME for a CNAME query
+      cname_record = formatted_records(records_for_type(record_set, 'CNAME'), 'CNAME').first
+      cname_target = cname_record.try(:[], :name)
+      cname_target.present? ? raw_records(cname_target, type) : nil
     end
 
     private
@@ -77,7 +88,8 @@ module DNSAdapter
     end
 
     TIMEOUT = 'TIMEOUT'.freeze
-    def check_for_timeout(record_set)
+    def check_for_timeout(domain)
+      record_set = find_records_for_domain(domain)
       return [] if record_set.select { |r| r == TIMEOUT }.empty?
       raise DNSAdapter::TimeoutError
     end
