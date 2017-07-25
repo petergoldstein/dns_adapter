@@ -1,0 +1,22 @@
+AllCops:
+  TargetRubyVersion: 2.4
+
+Metrics/AbcSize:
+  Exclude:
+    - 'Rakefile'
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+Metrics/LineLength:
+  Enabled: false
+Metrics/MethodLength:
+  Exclude:
+    - 'Rakefile'
+Style/Documentation:
+  Enabled: false
+Rails/HttpPositionalArguments:
+  Enabled: false
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/FormatStringToken:
+  Enabled: false
