@@ -8,11 +8,11 @@ Gem::Specification.new do |spec|
   spec.name          = 'dns_adapter'
   spec.version       = DNSAdapter::VERSION
   spec.authors       = ['Peter M. Goldstein']
-  spec.email         = ['peter.m.goldstein@gmail.com']
+  spec.email         = ['peter@valimail.com']
   spec.summary       = 'An adapter layer for DNS queries.'
   spec.description   = 'An adapter layer for DNS queries.'
-  spec.homepage      = 'https://github.com/petergoldstein/dns_adapter'
-  spec.license       = 'Apache'
+  spec.homepage      = 'https://github.com/ValiMail/dns_adapter'
+  spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'bundler'
-  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'rake', '>= 10.0'
   spec.add_development_dependency 'rspec', '>= 3.0'
   spec.add_development_dependency 'rubocop'
 end
