@@ -47,6 +47,12 @@ module DNSAdapter
       dns_resolver.timeouts = timeouts
     end
 
+    SUPPORTED_RR_TYPES = %w[A AAAA MX PTR TXT SPF NS CNAME].freeze
+    def self.type_class(rr_type)
+      raise ArgumentError, "Unknown RR type: #{rr_type}" unless SUPPORTED_RR_TYPES.include?(rr_type)
+      Resolv::DNS::Resource::IN.const_get(rr_type)
+    end
+
     private
 
     def fetch_a_type_records(domain, type)
@@ -113,15 +119,6 @@ module DNSAdapter
             "Time-out on DNS '#{rr_type}' lookup of '#{domain}'"
     rescue Resolv::ResolvError
       raise DNSAdapter::Error, "Error on DNS lookup of '#{domain}'"
-    end
-
-    SUPPORTED_RR_TYPES = %w(A AAAA MX PTR TXT SPF NS CNAME).freeze
-    def self.type_class(rr_type)
-      if SUPPORTED_RR_TYPES.include?(rr_type)
-        Resolv::DNS::Resource::IN.const_get(rr_type)
-      else
-        raise ArgumentError, "Unknown RR type: #{rr_type}"
-      end
     end
 
     def dns_resolver
