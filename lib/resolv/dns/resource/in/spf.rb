@@ -7,7 +7,7 @@ class Resolv
         # DNS record type for SPF records
         class SPF < Resolv::DNS::Resource::IN::TXT
           # resolv.rb doesn't define an SPF resource type.
-          TypeValue = 99 # rubocop:disable Style/ConstantName
+          TypeValue = 99 # rubocop:disable Naming/ConstantName
         end
       end
     end
