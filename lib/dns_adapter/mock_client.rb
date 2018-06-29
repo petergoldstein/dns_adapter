@@ -10,36 +10,14 @@ module DNSAdapter
       end
     end
 
-    def fetch_a_records(domain)
-      fetch_records(domain, 'A')
-    end
-
-    def fetch_aaaa_records(domain)
-      fetch_records(domain, 'AAAA')
-    end
-
-    def fetch_mx_records(domain)
-      fetch_records(domain, 'MX')
+    %w[A AAAA MX NS CNAME TXT SPF].each do |rtype|
+      define_method("fetch_#{rtype.downcase}_records") do |domain|
+        fetch_records(domain, rtype)
+      end
     end
 
     def fetch_ptr_records(arpa_address)
       fetch_records(arpa_address, 'PTR')
-    end
-
-    def fetch_ns_records(domain)
-      fetch_records(domain, 'NS')
-    end
-
-    def fetch_cname_records(domain)
-      fetch_records(domain, 'CNAME')
-    end
-
-    def fetch_txt_records(domain)
-      fetch_records(domain, 'TXT')
-    end
-
-    def fetch_spf_records(domain)
-      fetch_records(domain, 'SPF')
     end
 
     def timeouts=(timeouts)
