@@ -36,11 +36,13 @@ module DNSAdapter
     def raw_records(domain, type)
       record_set = find_records_for_domain(domain)
       return [] if record_set.empty?
+
       follow_cname(record_set, type) || records_for_type(record_set, type)
     end
 
     def follow_cname(record_set, type)
       return nil if type == 'CNAME' # Never follow CNAME for a CNAME query
+
       cname_record = formatted_records(records_for_type(record_set, 'CNAME'), 'CNAME').first
       cname_target = cname_record.try(:[], :name)
       cname_target.present? ? raw_records(cname_target, type) : nil
@@ -50,12 +52,14 @@ module DNSAdapter
 
     def normalize_domain(domain)
       return if domain.blank?
+
       domain = domain[0...-1] if domain[domain.length - 1] == '.'
       domain.downcase
     end
 
     def find_records_for_domain(domain)
       return [] if domain.blank?
+
       @zone_data[normalize_domain(domain)] || []
     end
 
@@ -69,6 +73,7 @@ module DNSAdapter
     def check_for_timeout(domain)
       record_set = find_records_for_domain(domain)
       return [] if record_set.select { |r| r == TIMEOUT }.empty?
+
       raise DNSAdapter::TimeoutError
     end
 
@@ -87,6 +92,7 @@ module DNSAdapter
       records.map do |r|
         val = r[type]
         raise DNSAdapter::TimeoutError if val == TIMEOUT
+
         value_to_hash(val, type).merge(type: type)
       end
     end
@@ -94,7 +100,7 @@ module DNSAdapter
     def value_to_hash(value, type)
       if type == 'MX' && value.is_a?(Array)
         mx_hash(value)
-      elsif (type == 'TXT' || type == 'SPF') && value.is_a?(Array)
+      elsif %w[TXT SPF].include?(type) && value.is_a?(Array)
         { text: value.join('') }
       else
         { RECORD_TYPE_TO_ATTR_NAME_MAP[type] => value }

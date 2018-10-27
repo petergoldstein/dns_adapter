@@ -50,6 +50,7 @@ module DNSAdapter
     SUPPORTED_RR_TYPES = %w[A AAAA MX PTR TXT SPF NS CNAME].freeze
     def self.type_class(rr_type)
       raise ArgumentError, "Unknown RR type: #{rr_type}" unless SUPPORTED_RR_TYPES.include?(rr_type)
+
       Resolv::DNS::Resource::IN.const_get(rr_type)
     end
 
@@ -94,7 +95,7 @@ module DNSAdapter
       records.map(&block)
     end
 
-    TRAILING_DOT_REGEXP = /\.\z/
+    TRAILING_DOT_REGEXP = /\.\z/.freeze
     def normalize_domain(domain)
       (domain.sub(TRAILING_DOT_REGEXP, '') || domain).downcase
     end
