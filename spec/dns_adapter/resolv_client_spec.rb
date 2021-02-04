@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe DNSAdapter::ResolvClient do
-  subject { DNSAdapter::ResolvClient.new }
-  let(:mock_resolver) { double(:resolver) }
+  subject(:client) { described_class.new }
 
-  context '#fetch_a_records' do
+  let(:mock_resolver) { instance_double(Resolv::DNS) }
+
+  describe '#fetch_a_records' do
     let(:first_a_addr) { Resolv::IPv4.new([127, 0, 0, 1].pack('CCCC')) }
     let(:first_a_record) { Resolv::DNS::Resource::IN::A.new(first_a_addr) }
     let(:second_a_addr) { Resolv::IPv4.new([192, 168, 8, 14].pack('CCCC')) }
@@ -13,11 +14,11 @@ describe DNSAdapter::ResolvClient do
     let(:domain) { 'example.com' }
     let(:domain_with_trailing) { "#{domain}." }
 
-    it 'should map the Resolv classes to a set of hashes' do
+    it 'maps the Resolv classes to a set of hashes' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::A).and_return(record_list)
-      results = subject.fetch_a_records(domain)
+      results = client.fetch_a_records(domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'A' })
@@ -25,11 +26,11 @@ describe DNSAdapter::ResolvClient do
         .to eq(record_list.map(&:address).map(&:to_s))
     end
 
-    it 'should map when the domain has a trailing dot' do
+    it 'maps when the domain has a trailing dot' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::A).and_return(record_list)
-      results = subject.fetch_a_records(domain_with_trailing)
+      results = client.fetch_a_records(domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'A' })
@@ -37,38 +38,38 @@ describe DNSAdapter::ResolvClient do
         .to eq(record_list.map(&:address).map(&:to_s))
     end
 
-    it 'should map the Resolv errors to Coppertone errors' do
+    it 'maps the Resolv errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::A)
         .and_raise(Resolv::ResolvError)
       expect do
-        subject.fetch_a_records(domain_with_trailing)
+        client.fetch_a_records(domain_with_trailing)
       end.to raise_error(DNSAdapter::Error)
     end
 
-    it 'should map the Resolv timeout errors to Coppertone errors' do
+    it 'maps the Resolv timeout errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::A)
         .and_raise(Resolv::ResolvTimeout)
       expect do
-        subject.fetch_a_records(domain_with_trailing)
+        client.fetch_a_records(domain_with_trailing)
       end.to raise_error(DNSAdapter::TimeoutError)
     end
 
-    it 'should map the Resolv timeout errors to Coppertone errors' do
+    it 'maps the nil responses to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::A)
         .and_return(nil)
       expect do
-        subject.fetch_a_records(domain_with_trailing)
+        client.fetch_a_records(domain_with_trailing)
       end.to raise_error(DNSAdapter::Error)
     end
   end
 
-  context '#fetch_aaaa_records' do
+  describe '#fetch_aaaa_records' do
     let(:first_aaaa_addr) do
       Resolv::IPv6.create('FE80:10:1:1:202:B3FF:FE1E:8329')
     end
@@ -85,11 +86,11 @@ describe DNSAdapter::ResolvClient do
     let(:domain) { 'example.com' }
     let(:domain_with_trailing) { "#{domain}." }
 
-    it 'should map the Resolv classes to a set of hashes' do
+    it 'maps the Resolv classes to a set of hashes' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::AAAA).and_return(record_list)
-      results = subject.fetch_aaaa_records(domain)
+      results = client.fetch_aaaa_records(domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'AAAA' })
@@ -97,11 +98,11 @@ describe DNSAdapter::ResolvClient do
         .to eq(record_list.map(&:address).map(&:to_s))
     end
 
-    it 'should map when the domain has a trailing dot' do
+    it 'maps when the domain has a trailing dot' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::AAAA).and_return(record_list)
-      results = subject.fetch_aaaa_records(domain_with_trailing)
+      results = client.fetch_aaaa_records(domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'AAAA' })
@@ -109,26 +110,26 @@ describe DNSAdapter::ResolvClient do
         .to eq(record_list.map(&:address).map(&:to_s))
     end
 
-    it 'should map the Resolv errors to Coppertone errors' do
+    it 'maps the Resolv errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::AAAA)
         .and_raise(Resolv::ResolvError)
-      expect { subject.fetch_aaaa_records(domain_with_trailing) }
+      expect { client.fetch_aaaa_records(domain_with_trailing) }
         .to raise_error(DNSAdapter::Error)
     end
 
-    it 'should map the Resolv timeout errors to Coppertone errors' do
+    it 'maps the Resolv timeout errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::AAAA)
         .and_raise(Resolv::ResolvTimeout)
-      expect { subject.fetch_aaaa_records(domain_with_trailing) }
+      expect { client.fetch_aaaa_records(domain_with_trailing) }
         .to raise_error(DNSAdapter::TimeoutError)
     end
   end
 
-  context '#fetch_mx_records' do
+  describe '#fetch_mx_records' do
     let(:first_mx_name) do
       Resolv::DNS::Name.create('alt1.aspmx.l.google.com.')
     end
@@ -145,11 +146,11 @@ describe DNSAdapter::ResolvClient do
     let(:domain) { 'example.com' }
     let(:domain_with_trailing) { "#{domain}." }
 
-    it 'should map the Resolv classes to a set of hashes' do
+    it 'maps the Resolv classes to a set of hashes' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::MX).and_return(record_list)
-      results = subject.fetch_mx_records(domain)
+      results = client.fetch_mx_records(domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'MX' })
@@ -157,11 +158,11 @@ describe DNSAdapter::ResolvClient do
         .to eq(record_list.map(&:exchange).map(&:to_s))
     end
 
-    it 'should map when the domain has a trailing dot' do
+    it 'maps when the domain has a trailing dot' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::MX).and_return(record_list)
-      results = subject.fetch_mx_records(domain_with_trailing)
+      results = client.fetch_mx_records(domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'MX' })
@@ -169,26 +170,26 @@ describe DNSAdapter::ResolvClient do
         .to eq(record_list.map(&:exchange).map(&:to_s))
     end
 
-    it 'should map the Resolv errors to Coppertone errors' do
+    it 'maps the Resolv errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::MX)
         .and_raise(Resolv::ResolvError)
-      expect { subject.fetch_mx_records(domain_with_trailing) }
+      expect { client.fetch_mx_records(domain_with_trailing) }
         .to raise_error(DNSAdapter::Error)
     end
 
-    it 'should map the Resolv timeout errors to Coppertone errors' do
+    it 'maps the Resolv timeout errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::MX)
         .and_raise(Resolv::ResolvTimeout)
-      expect { subject.fetch_mx_records(domain_with_trailing) }
+      expect { client.fetch_mx_records(domain_with_trailing) }
         .to raise_error(DNSAdapter::TimeoutError)
     end
   end
 
-  context '#fetch_txt_records' do
+  describe '#fetch_txt_records' do
     let(:first_txt_string) { SecureRandom.hex(10) }
     let(:first_txt_record) do
       Resolv::DNS::Resource::IN::TXT.new(first_txt_string)
@@ -205,56 +206,56 @@ describe DNSAdapter::ResolvClient do
     let(:domain) { 'example.com' }
     let(:domain_with_trailing) { "#{domain}." }
 
-    it 'should map the Resolv classes to a set of hashes' do
+    it 'maps the Resolv classes to a set of hashes' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::TXT)
         .and_return(record_list)
-      results = subject.fetch_txt_records(domain)
+      results = client.fetch_txt_records(domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'TXT' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_txt_string,
-         ([second_txt_string] + second_txt_string_array).join('')]
+         ([second_txt_string] + second_txt_string_array).join]
       )
     end
 
-    it 'should map when the domain has a trailing dot' do
+    it 'maps when the domain has a trailing dot' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::TXT)
         .and_return(record_list)
-      results = subject.fetch_txt_records(domain_with_trailing)
+      results = client.fetch_txt_records(domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'TXT' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_txt_string,
-         ([second_txt_string] + second_txt_string_array).join('')]
+         ([second_txt_string] + second_txt_string_array).join]
       )
     end
 
-    it 'should map the Resolv errors to Coppertone errors' do
+    it 'maps the Resolv errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::TXT)
         .and_raise(Resolv::ResolvError)
-      expect { subject.fetch_txt_records(domain_with_trailing) }
+      expect { client.fetch_txt_records(domain_with_trailing) }
         .to raise_error(DNSAdapter::Error)
     end
 
-    it 'should map the Resolv timeout errors to Coppertone errors' do
+    it 'maps the Resolv timeout errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::TXT)
         .and_raise(Resolv::ResolvTimeout)
-      expect { subject.fetch_txt_records(domain_with_trailing) }
+      expect { client.fetch_txt_records(domain_with_trailing) }
         .to raise_error(DNSAdapter::TimeoutError)
     end
   end
 
-  context '#fetch_spf_records' do
+  describe '#fetch_spf_records' do
     let(:first_spf_string) { SecureRandom.hex(10) }
     let(:first_spf_record) do
       Resolv::DNS::Resource::IN::TXT.new(first_spf_string)
@@ -271,56 +272,56 @@ describe DNSAdapter::ResolvClient do
     let(:domain) { 'example.com' }
     let(:domain_with_trailing) { "#{domain}." }
 
-    it 'should map the Resolv classes to a set of hashes' do
+    it 'maps the Resolv classes to a set of hashes' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::SPF)
         .and_return(record_list)
-      results = subject.fetch_spf_records(domain)
+      results = client.fetch_spf_records(domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'SPF' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_spf_string,
-         ([second_spf_string] + second_spf_string_array).join('')]
+         ([second_spf_string] + second_spf_string_array).join]
       )
     end
 
-    it 'should map when the domain has a trailing dot' do
+    it 'maps when the domain has a trailing dot' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::SPF)
         .and_return(record_list)
-      results = subject.fetch_spf_records(domain_with_trailing)
+      results = client.fetch_spf_records(domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'SPF' })
       expect(results.map { |x| x[:text] }).to eq(
         [first_spf_string,
-         ([second_spf_string] + second_spf_string_array).join('')]
+         ([second_spf_string] + second_spf_string_array).join]
       )
     end
 
-    it 'should map the Resolv errors to Coppertone errors' do
+    it 'maps the Resolv errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::SPF)
         .and_raise(Resolv::ResolvError)
-      expect { subject.fetch_spf_records(domain_with_trailing) }
+      expect { client.fetch_spf_records(domain_with_trailing) }
         .to raise_error(DNSAdapter::Error)
     end
 
-    it 'should map the Resolv timeout errors to Coppertone errors' do
+    it 'maps the Resolv timeout errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(domain, Resolv::DNS::Resource::IN::SPF)
         .and_raise(Resolv::ResolvTimeout)
-      expect { subject.fetch_spf_records(domain_with_trailing) }
+      expect { client.fetch_spf_records(domain_with_trailing) }
         .to raise_error(DNSAdapter::TimeoutError)
     end
   end
 
-  context '#fetch_ptr_records' do
+  describe '#fetch_ptr_records' do
     let(:first_ptr_name) { SecureRandom.hex(10) }
     let(:first_ptr_record) do
       Resolv::DNS::Resource::IN::PTR.new(first_ptr_name)
@@ -329,12 +330,12 @@ describe DNSAdapter::ResolvClient do
     let(:arpa_domain) { '126.18.67.80.in-addr.arpa' }
     let(:arpa_domain_with_trailing) { "#{arpa_domain}." }
 
-    it 'should map the Resolv classes to a set of hashes' do
+    it 'maps the Resolv classes to a set of hashes' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(arpa_domain, Resolv::DNS::Resource::IN::PTR)
         .and_return(record_list)
-      results = subject.fetch_ptr_records(arpa_domain)
+      results = client.fetch_ptr_records(arpa_domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'PTR' })
@@ -343,12 +344,12 @@ describe DNSAdapter::ResolvClient do
       )
     end
 
-    it 'should map when the domain has a trailing dot' do
+    it 'maps when the domain has a trailing dot' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(arpa_domain, Resolv::DNS::Resource::IN::PTR)
         .and_return(record_list)
-      results = subject.fetch_ptr_records(arpa_domain_with_trailing)
+      results = client.fetch_ptr_records(arpa_domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'PTR' })
@@ -357,26 +358,26 @@ describe DNSAdapter::ResolvClient do
       )
     end
 
-    it 'should map the Resolv errors to Coppertone errors' do
+    it 'maps the Resolv errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(arpa_domain, Resolv::DNS::Resource::IN::PTR)
         .and_raise(Resolv::ResolvError)
-      expect { subject.fetch_ptr_records(arpa_domain_with_trailing) }
+      expect { client.fetch_ptr_records(arpa_domain_with_trailing) }
         .to raise_error(DNSAdapter::Error)
     end
 
-    it 'should map the Resolv timeout errors to Coppertone errors' do
+    it 'maps the Resolv timeout errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(arpa_domain, Resolv::DNS::Resource::IN::PTR)
         .and_raise(Resolv::ResolvTimeout)
-      expect { subject.fetch_ptr_records(arpa_domain_with_trailing) }
+      expect { client.fetch_ptr_records(arpa_domain_with_trailing) }
         .to raise_error(DNSAdapter::TimeoutError)
     end
   end
 
-  context '#fetch_ns_records' do
+  describe '#fetch_ns_records' do
     let(:first_ns_name) { SecureRandom.hex(10) }
     let(:first_ns_record) do
       Resolv::DNS::Resource::IN::NS.new(first_ns_name)
@@ -385,12 +386,12 @@ describe DNSAdapter::ResolvClient do
     let(:ns_domain) { 'example.com' }
     let(:ns_domain_with_trailing) { "#{ns_domain}." }
 
-    it 'should map the Resolv classes to a set of hashes' do
+    it 'maps the Resolv classes to a set of hashes' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(ns_domain, Resolv::DNS::Resource::IN::NS)
         .and_return(record_list)
-      results = subject.fetch_ns_records(ns_domain)
+      results = client.fetch_ns_records(ns_domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'NS' })
@@ -399,12 +400,12 @@ describe DNSAdapter::ResolvClient do
       )
     end
 
-    it 'should map when the domain has a trailing dot' do
+    it 'maps when the domain has a trailing dot' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(ns_domain, Resolv::DNS::Resource::IN::NS)
         .and_return(record_list)
-      results = subject.fetch_ns_records(ns_domain_with_trailing)
+      results = client.fetch_ns_records(ns_domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'NS' })
@@ -413,26 +414,26 @@ describe DNSAdapter::ResolvClient do
       )
     end
 
-    it 'should map the Resolv errors to Coppertone errors' do
+    it 'maps the Resolv errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(ns_domain, Resolv::DNS::Resource::IN::NS)
         .and_raise(Resolv::ResolvError)
-      expect { subject.fetch_ns_records(ns_domain_with_trailing) }
+      expect { client.fetch_ns_records(ns_domain_with_trailing) }
         .to raise_error(DNSAdapter::Error)
     end
 
-    it 'should map the Resolv timeout errors to Coppertone errors' do
+    it 'maps the Resolv timeout errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(ns_domain, Resolv::DNS::Resource::IN::NS)
         .and_raise(Resolv::ResolvTimeout)
-      expect { subject.fetch_ns_records(ns_domain_with_trailing) }
+      expect { client.fetch_ns_records(ns_domain_with_trailing) }
         .to raise_error(DNSAdapter::TimeoutError)
     end
   end
 
-  context '#fetch_cname_records' do
+  describe '#fetch_cname_records' do
     let(:first_cname_name) { SecureRandom.hex(10) }
     let(:first_cname_record) do
       Resolv::DNS::Resource::IN::CNAME.new(first_cname_name)
@@ -441,12 +442,12 @@ describe DNSAdapter::ResolvClient do
     let(:cname_domain) { 'example.com' }
     let(:cname_domain_with_trailing) { "#{cname_domain}." }
 
-    it 'should map the Resolv classes to a set of hashes' do
+    it 'maps the Resolv classes to a set of hashes' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(cname_domain, Resolv::DNS::Resource::IN::CNAME)
         .and_return(record_list)
-      results = subject.fetch_cname_records(cname_domain)
+      results = client.fetch_cname_records(cname_domain)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'CNAME' })
@@ -455,12 +456,12 @@ describe DNSAdapter::ResolvClient do
       )
     end
 
-    it 'should map when the domain has a trailing dot' do
+    it 'maps when the domain has a trailing dot' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(cname_domain, Resolv::DNS::Resource::IN::CNAME)
         .and_return(record_list)
-      results = subject.fetch_cname_records(cname_domain_with_trailing)
+      results = client.fetch_cname_records(cname_domain_with_trailing)
       expect(results.size).to eq(record_list.length)
       expect(results.map { |x| x[:type] })
         .to eq(Array.new(record_list.length) { 'CNAME' })
@@ -469,31 +470,32 @@ describe DNSAdapter::ResolvClient do
       )
     end
 
-    it 'should map the Resolv errors to Coppertone errors' do
+    it 'maps the Resolv errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(cname_domain, Resolv::DNS::Resource::IN::CNAME)
         .and_raise(Resolv::ResolvError)
-      expect { subject.fetch_cname_records(cname_domain_with_trailing) }
+      expect { client.fetch_cname_records(cname_domain_with_trailing) }
         .to raise_error(DNSAdapter::Error)
     end
 
-    it 'should map the Resolv timeout errors to Coppertone errors' do
+    it 'maps the Resolv timeout errors to Coppertone errors' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:getresources)
         .with(cname_domain, Resolv::DNS::Resource::IN::CNAME)
         .and_raise(Resolv::ResolvTimeout)
-      expect { subject.fetch_cname_records(cname_domain_with_trailing) }
+      expect { client.fetch_cname_records(cname_domain_with_trailing) }
         .to raise_error(DNSAdapter::TimeoutError)
     end
   end
 
-  context '#timeouts=' do
+  describe '#timeouts=' do
     let(:timeout_val) { 5 }
-    it 'should delegate timeouts=' do
+
+    it 'delegates timeouts=' do
       expect(Resolv::DNS).to receive(:new).and_return(mock_resolver)
       expect(mock_resolver).to receive(:timeouts=).with(timeout_val)
-      expect { subject.timeouts = timeout_val }.not_to raise_error
+      expect { client.timeouts = timeout_val }.not_to raise_error
     end
   end
 end
