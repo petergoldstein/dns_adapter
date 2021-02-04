@@ -101,7 +101,7 @@ module DNSAdapter
       if type == 'MX' && value.is_a?(Array)
         mx_hash(value)
       elsif %w[TXT SPF].include?(type) && value.is_a?(Array)
-        { text: value.join('') }
+        { text: value.join }
       else
         { RECORD_TYPE_TO_ATTR_NAME_MAP[type] => value }
       end

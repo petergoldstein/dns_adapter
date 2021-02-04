@@ -1,20 +1,12 @@
+require:
+  - 'rubocop-rspec'
+
 AllCops:
   TargetRubyVersion: 2.7
+  NewCops: enable
 
-Layout/EmptyLinesAroundAttributeAccessor:
-  Enabled: true
 Layout/LineLength:
   Enabled: false
-Layout/SpaceAroundMethodCallOperator:
-  Enabled: true
-Lint/DeprecatedOpenSSLConstant:
-  Enabled: true
-Lint/MixedRegexpCaptureTypes:
-  Enabled: true
-Lint/RaiseException:
-  Enabled: true
-Lint/StructNewOverride:
-  Enabled: true
 Lint/UriEscapeUnescape:
   Enabled: false
 Metrics/AbcSize:
@@ -31,34 +23,28 @@ Naming/FileName:
     - 'spec/open_spf/**/*'
 Naming/MethodParameterName:
   Enabled: false
-Style/AccessorGrouping:
-  Enabled: true
-Style/BisectedAttrAccessor:
-  Enabled: true
+
+RSpec/ExampleLength:
+  Enabled: false
+RSpec/MessageSpies:
+  Enabled: false
+RSpec/MultipleExpectations:
+  Enabled: false
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+RSpec/NestedGroups:
+  Max: 12
+RSpec/StubbedMock:
+  Enabled: false
+RSpec/SubjectStub:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
-Style/ExponentialNotation:
-  Enabled: true
 Style/FrozenStringLiteralComment:
   Enabled: false
 Style/FormatStringToken:
   Enabled: false
-Style/HashEachMethods:
-  Enabled: true
-Style/HashTransformKeys:
-  Enabled: true
-Style/HashTransformValues:
-  Enabled: true
-Style/RedundantAssignment:
-  Enabled: true
-Style/RedundantFetchBlock:
-  Enabled: true
-Style/RedundantRegexpCharacterClass:
-  Enabled: true
-Style/RedundantRegexpEscape:
-  Enabled: true
-Style/SlicingWithRange:
-  Enabled: true
 Style/SymbolArray:
   Exclude:
     - 'spec/open_spf/**/*'

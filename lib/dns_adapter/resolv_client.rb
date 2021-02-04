@@ -72,9 +72,9 @@ module DNSAdapter
           type: type,
           # Use strings.join('') to avoid JRuby issue where
           # data only returns the first string
-          text: record.strings.join('').encode('US-ASCII', invalid: :replace,
-                                                           undef: :replace,
-                                                           replace: '?'),
+          text: record.strings.join.encode('US-ASCII', invalid: :replace,
+                                                       undef: :replace,
+                                                       replace: '?'),
           ttl: record.ttl
         }
       end
